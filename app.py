@@ -2,6 +2,18 @@ from elasticsearch import Elasticsearch
 from data_set import data_set
 
 
+def match_search(elastic_object, index_name):
+    """
+    Perform match search, it will take body as a parameter which is json type
+    In body: from = offset from current, size: total matched document, Query: what type of query and what key
+    :param elastic_object: Instance of elastic search
+    :param index_name: Index name
+    :return:
+    """
+    data = elastic_object.search(index=index_name, body={'from': 0, 'size': 1, 'query': {'match': {'name': 'cake'}}})
+    print("Searched data is", data)
+
+
 def get_data_using_id(elastic_object, index_name, _id):
     """
     Get stored data using id
@@ -15,6 +27,24 @@ def get_data_using_id(elastic_object, index_name, _id):
     Data is present in source key
     """
     print("Get data is", data['_source'])
+
+
+def search_operations(elastic_object, index_name, stored_result):
+    """
+    Performing various search and get operations
+    :param elastic_object: Instance of elastic search
+    :param index_name: Index name
+    :param stored_result: Stored result in index to perform get and search operations
+    :return:
+    """
+    """
+    Get data using Id
+    """
+    get_data_using_id(elastic_object, index_name, stored_result['_id'])
+    """
+    Search
+    """
+    match_search(elastic_object, index_name)
 
 
 def create_index(elastic_object, index_name):
@@ -37,6 +67,7 @@ def create_index(elastic_object, index_name):
 def store_record(elastic_object, index_name, example_data):
     """
     Store some sample data in Index
+    After store we are performing various operations such as get, search, scan by calling respective methods
     :param elastic_object: elastic search object after connection
     :param index_name: Name of index inn which data is to be stored
     :param example_data: Some sample data
@@ -46,11 +77,11 @@ def store_record(elastic_object, index_name, example_data):
     try:
         for data in example_data:
             outcome = elastic_object.index(index=index_name, doc_type='sample_records', body=data)
-            print("Data addedd successfully")
+            print("Data added successfully")
             """
-            Get data using Id
+            Perform various search operations
             """
-            get_data_using_id(elastic_object, index_name, outcome['_id'])
+            search_operations(elastic_object, index_name, outcome)
     except Exception as ex:
         print("Error in indexing Data", ex)
         is_stored = False
