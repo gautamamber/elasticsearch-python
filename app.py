@@ -5,6 +5,17 @@ import time
 from elasticsearch import helpers
 
 
+def scan_query(elastic_object):
+    """
+    Scan data
+    :param elastic_object: instance of elastic search
+    :return:
+    """
+    results = helpers.scan(elastic_object, index='bulk_data_example', doc_type='doc', query={"query": {"match_all": {}}})
+    for result in results:
+        print("Scan result is:  ", result['_id'], result['_source'])
+
+
 def bulk_create(elastic_object):
     """
     Create bulk data
@@ -201,6 +212,10 @@ def main():
     Bulk create method called
     """
     bulk_create(es)
+    """
+    Scan operation of above bulk data
+    """
+    scan_query(es)
 
     return "Hello world"
 
