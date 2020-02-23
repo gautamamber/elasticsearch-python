@@ -1,5 +1,43 @@
 from elasticsearch import Elasticsearch
 from data_set import data_set
+from datetime import datetime
+import time
+from elasticsearch import helpers
+
+
+def bulk_create(elastic_object):
+    """
+    Create bulk data
+    :param elastic_object: instance of elastic search
+    :return:
+    """
+    data = [{
+        '_index': 'bulk_data_example',
+        '_type': 'doc',
+        '_id': bulk_data,
+        '_source': {
+            'any_key': 'data'+str(bulk_data),
+            'timestamp': datetime.now()
+        }
+    } for bulk_data in range(0, 100)]
+    """
+    Here we also calculate the start time and end time for checking the query processing time
+    """
+    start = time.time()
+    helpers.bulk(elastic_object, data)
+    end = time.time()
+    print("Difference between start and end time is", end - start)
+
+
+def regex_queries(elastic_object, index_name):
+    """
+    Match using regular expression, example .* match everything, or make a subset
+    :param elastic_object: Instance of elastic search
+    :param index_name: Index name
+    :return:
+    """
+    data = elastic_object.search(index=index_name, body={'from': 0, 'size': 1, 'query': {'regexp': {'name': '.*'}}})
+    print("Regex data is", data)
 
 
 def combined_queries(elastic_object, index_name):
@@ -71,6 +109,10 @@ def search_operations(elastic_object, index_name, stored_result):
     Combined query
     """
     combined_queries(elastic_object, index_name)
+    """
+    Regex queries
+    """
+    regex_queries(elastic_object, index_name)
 
 
 def create_index(elastic_object, index_name):
@@ -154,6 +196,12 @@ def main():
             store = store_record(es, index_name, example_data)
             if store:
                 print("Store record successfully")
+
+    """
+    Bulk create method called
+    """
+    bulk_create(es)
+
     return "Hello world"
 
 
