@@ -2,6 +2,28 @@ from elasticsearch import Elasticsearch
 from data_set import data_set
 
 
+def combined_queries(elastic_object, index_name):
+    """
+    On the basis of conditions such as must, must not, should etc
+    :param elastic_object: Instance of elastic search
+    :param index_name: Index name
+    :return:
+    """
+    data = elastic_object.search(index=index_name, body={'from': 0, 'size': 0, 'query': {'bool': {'must_not': {'match': {'name': 'cake'}}}}})
+    print("Combined query is: ", data)
+
+
+def match_query(elastic_object, index_name):
+    """
+    Match phrase, term used for exact search
+    :param elastic_object: Instance of elastic search
+    :param index_name: Index name
+    :return:
+    """
+    data = elastic_object.search(index=index_name, body={'from': 0, 'size': 1, 'query': {'term': {'name': 'cake'}}})
+    print("Searched data is", data)
+
+
 def match_search(elastic_object, index_name):
     """
     Perform match search, it will take body as a parameter which is json type
@@ -19,7 +41,7 @@ def get_data_using_id(elastic_object, index_name, _id):
     Get stored data using id
     :param elastic_object: Elastic search instance
     :param index_name: Index name
-    :param id: id to get data
+    :param _id: id to get data
     :return:
     """
     data = elastic_object.get(index=index_name, doc_type='sample_records', id=_id)
@@ -45,6 +67,10 @@ def search_operations(elastic_object, index_name, stored_result):
     Search
     """
     match_search(elastic_object, index_name)
+    """
+    Combined query
+    """
+    combined_queries(elastic_object, index_name)
 
 
 def create_index(elastic_object, index_name):
