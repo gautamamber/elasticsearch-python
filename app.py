@@ -11,7 +11,10 @@ def get_data_using_id(elastic_object, index_name, _id):
     :return:
     """
     data = elastic_object.get(index=index_name, doc_type='sample_records', id=_id)
-    print("Get data is", data)
+    """
+    Data is present in source key
+    """
+    print("Get data is", data['_source'])
 
 
 def create_index(elastic_object, index_name):
