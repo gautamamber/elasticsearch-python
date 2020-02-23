@@ -19,6 +19,26 @@ def create_index(elastic_object, index_name):
         return created
 
 
+def store_record(elastic_object, index_name, example_data):
+    """
+    Store some sample data in Index
+    :param elastic_object: elastic search object after connection
+    :param index_name: Name of index inn which data is to be stored
+    :param example_data: Some sample data
+    :return:
+    """
+    is_stored = True
+    try:
+        for data in example_data:
+            outcome = elastic_object.index(index=index_name, doc_type='sample_records', body=data)
+            print("Outcome data is", outcome)
+    except Exception as ex:
+        print("Error in indexing Data", ex)
+        is_stored = False
+    finally:
+        return is_stored
+
+
 def connect_elastic_search():
     """
     Connect elastic search on localhost:9200
@@ -54,8 +74,10 @@ def main():
     es = connect_elastic_search()
     if es is not None:
         if create_index(es, index_name):
-            # store = store_record(es, index_name, example_data)
             print("Index Created successfully...")
+            store = store_record(es, index_name, example_data)
+            if store:
+                print("Store record successfully")
     return "Hello world"
 
 
