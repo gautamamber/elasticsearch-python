@@ -2,6 +2,18 @@ from elasticsearch import Elasticsearch
 from data_set import data_set
 
 
+def get_data_using_id(elastic_object, index_name, _id):
+    """
+    Get stored data using id
+    :param elastic_object: Elastic search instance
+    :param index_name: Index name
+    :param id: id to get data
+    :return:
+    """
+    data = elastic_object.get(index=index_name, doc_type='sample_records', id=_id)
+    print("Get data is", data)
+
+
 def create_index(elastic_object, index_name):
     """
     Create new index also similar to table
@@ -31,7 +43,11 @@ def store_record(elastic_object, index_name, example_data):
     try:
         for data in example_data:
             outcome = elastic_object.index(index=index_name, doc_type='sample_records', body=data)
-            print("Outcome data is", outcome)
+            print("Data addedd successfully")
+            """
+            Get data using Id
+            """
+            get_data_using_id(elastic_object, index_name, outcome['_id'])
     except Exception as ex:
         print("Error in indexing Data", ex)
         is_stored = False
