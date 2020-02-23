@@ -1,4 +1,22 @@
 from elasticsearch import Elasticsearch
+from data_set import data_set
+
+
+def create_index(elastic_object, index_name):
+    """
+    Create new index also similar to table
+    :return:
+    """
+    created = False
+    try:
+        if not elastic_object.indices.exists(index_name):
+            elastic_object.indices.create(index=index_name, ignore=400)
+            print("Index created")
+        created = True
+    except Exception as ex:
+        print("Exception is: ", str(ex))
+    finally:
+        return created
 
 
 def connect_elastic_search():
@@ -8,7 +26,6 @@ def connect_elastic_search():
     """
     _es = None
     _es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
-    _es
     if _es.ping():
         print("====connected====")
     else:
@@ -32,7 +49,13 @@ def main():
     11. Analyzers
     :return:
     """
+    example_data = data_set
+    index_name = "example_index"
     es = connect_elastic_search()
+    if es is not None:
+        if create_index(es, index_name):
+            # store = store_record(es, index_name, example_data)
+            print("Index Created successfully...")
     return "Hello world"
 
 
